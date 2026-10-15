@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YojanaSetu - National & State Government Scheme Portal</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="layout-root" id="appRoot">
+  <!-- 1. LEFT SIDEBAR -->
+  <aside class="sidebar-left" id="sidebar">
+    <div class="sidebar-header">
+      <div class="portal-brand">
+        <span class="emblem-symbol">🏛️</span>
+        <div>
+          <h2>YojanaSetu</h2>
+          <p>National Portal of India</p>
+        </div>
+      </div>
+      <button class="hamburger-toggle" onclick="toggleSidebar()" title="Toggle Navigation">☰</button>
+    </div>
+
+    <!-- Active Authenticated User Banner -->
+    <div id="userProfileArea" class="sidebar-profile-card" style="display: none;">
+      <div>
+        <span id="displayUserName" class="profile-name"></span>
+        <span id="displayUserRole" class="profile-role"></span>
+        <span id="displayUserAadhaar" class="profile-aadhaar"></span>
+      </div>
+      <button class="btn-logout" onclick="handleLogout()">Logout</button>
+    </div>
+
+    <!-- Sign In Panel with Separate Email and Aadhaar Fields -->
+    <div id="sidebarLoginCard" class="sidebar-login-card">
+      <h3>Sign In to Portal</h3>
+      
+      <div class="input-group">
+        <label for="loginEmail">Email Address</label>
+        <input type="email" id="loginEmail" placeholder="name@domain.com" autocomplete="email" />
+      </div>
+
+      <div class="input-group">
+        <label for="loginAadhaar">12-Digit Aadhaar Number</label>
+        <input 
+          type="text" 
+          id="loginAadhaar" 
+          maxlength="14" 
+          placeholder="XXXX XXXX XXXX" 
+          oninput="formatAadhaarInput(this)" 
+        />
+      </div>
+
+      <div class="input-group">
+        <label for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" placeholder="Enter password" />
+      </div>
+
+      <div class="input-group">
+        <label for="loginRole">Account Type</label>
+        <select id="loginRole">
+          <option value="citizen">Citizen / Student / Jobseeker</option>
+          <option value="official">District Verification Officer</option>
+        </select>
+      </div>
+
+      <button class="btn-signin-submit" onclick="handleLogin()">Sign In</button>
+      <p class="login-caption">Sign in to apply & track status</p>
+    </div>
+
+    <!-- Navigation Menu Items -->
+    <nav class="sidebar-nav">
+      <button class="nav-btn active" id="btnNavHome" onclick="switchView('homeView', this)">
+        <span>🏠 Home</span>
+      </button>
+      <button class="nav-btn" id="btnNavSchemes" onclick="switchView('schemesView', this)">
+        <span>🔍 Find Schemes</span>
+      </button>
+      <button class="nav-btn" id="btnNavMyApps" onclick="openProtectedView('myAppsView', this)">
+        <span>📄 My Applications</span>
+      </button>
+      <button class="nav-btn" id="btnNavNotif" onclick="switchView('notificationsView', this)">
+        <span>🔔 Notifications</span>
+        <span class="counter-badge" id="notifBadge">3</span>
+      </button>
+      <!-- Help & Support -->
+      <button class="nav-btn" id="btnNavHelp" onclick="switchView('helpView', this)">
+        <span>❓ Help &amp; Support</span>
+      </button>
+      <!-- About Us -->
+      <button class="nav-btn" id="btnNavAbout" onclick="switchView('aboutView', this)">
+        <span>ℹ️ About Us</span>
+      </button>
+      <!-- District Approval Officer Panel -->
+      <button class="nav-btn official-desk-btn" id="officialNavBtn" style="display: none;" onclick="openProtectedView('officialDashView', this)">
+        <span>🛡️ District Approval Desk</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <p>Digital India • Power To Empower</p>
+      <span>Government of India</span>
+    </div>
+  </aside>
+
+  <!-- 2. MAIN CONTAINER -->
+  <main class="main-content">
+    <header class="top-nav-bar">
+      <div class="top-left-ctrl">
+        <button class="hamburger-top-btn" onclick="toggleSidebar()">☰</button>
+        <div class="global-search-input">
+          <span>🔍</span>
+          <input 
+            type="text" 
+            id="globalSearchInput" 
+            placeholder="Search scholarships, farmer grants, housing..." 
+            onkeyup="runFilter()" 
+          />
+        </div>
+      </div>
+
+      <div class="top-right-ctrl">
+        <select class="lang-selector">
+          <option>English</option>
+          <option>తెలుగు (Telugu)</option>
+          <option>हिन्दी (Hindi)</option>
+        </select>
+        <button class="btn-top-action" onclick="switchView('helpView', document.getElementById('btnNavHelp'))">
+          ❓ Helpdesk
+        </button>
+        <button class="btn-alert-top" onclick="switchView('notificationsView', document.getElementById('btnNavNotif'))">
+          🔔 Bulletin Alerts
+        </button>
+      </div>
+    </header>
+
+    <!-- VIEW: HOME VIEW -->
+    <div id="homeView" class="view-panel active-panel">
+      <!-- Hero Banner with National Welfare Ribbon Card -->
+      <section class="hero-section">
+        <div class="hero-caption-area">
+          <span class="govt-subtag">PUBLIC SERVICE GUARANTEE PORTAL</span>
+          <h1>Empowering Citizens with Direct Benefits</h1>
+          <p>Verified financial grants, scholarships, agricultural subsidies, and healthcare cover directly credited via Aadhaar DBT.</p>
+          <div class="hero-actions">
+            <button class="btn-primary" onclick="switchView('schemesView', document.getElementById('btnNavSchemes'))">Explore All Schemes →</button>
+            <button class="btn-secondary" onclick="openProtectedView('myAppsView', document.getElementById('btnNavMyApps'))">Track Application</button>
+          </div>
+        </div>
+
+        <!-- National Welfare Dark Green Badge Card -->
+        <div class="national-welfare-card">
+          <div class="card-top-header">
+            <span class="welfare-tag">NATIONAL WELFARE</span>
+            <span class="ribbon-icon">🎗️</span>
+          </div>
+          <h3 class="welfare-title">Zero-Income &amp; Merit Schemes Live</h3>
+          <p class="welfare-desc">Scholarships, farmers support, youth apprenticeships &amp; healthcare DBT.</p>
+          <div class="card-divider"></div>
+          <div class="card-bottom-footer">
+            <span class="footer-left">Pan India Support</span>
+            <span class="footer-right">100% Cashless DBT</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4 Quick-Action Tiles -->
+      <section class="quick-tiles-grid">
+        <div class="tile-item" onclick="filterByCategory('Education')">
+          <span class="tile-icon">🎓</span>
+          <h4>Scholarships &amp; Students</h4>
+          <p>Pre-matric, post-matric &amp; fee reimbursement</p>
+        </div>
+        <div class="tile-item" onclick="filterByCategory('Agriculture')">
+          <span class="tile-icon">🌾</span>
+          <h4>Farmers &amp; Agriculture</h4>
+          <p>Input subsidies, Rythu Bharosa &amp; Kisan Nidhi</p>
+        </div>
+        <div class="tile-item" onclick="filterByCategory('Women')">
+          <span class="tile-icon">👩</span>
+          <h4>Women Empowerment</h4>
+          <p>Self-help assistance, Cheyutha &amp; pensions</p>
+        </div>
+        <div class="tile-item" onclick="openProtectedView('myAppsView', document.getElementById('btnNavMyApps'))">
+          <span class="tile-icon">📑</span>
+          <h4>Track Application Status</h4>
+          <p>Check district verification &amp; approval remarks</p>
+        </div>
+      </section>
+
+      <!-- Search Schemes Filter with Aadhaar and Mobile in Middle -->
+      <section class="search-filter-box">
+        <div class="filter-headline">
+          <h3>Search Central &amp; State Government Schemes</h3>
+          <p>Specify state, age group, income bracket, Aadhaar and mobile for targeted matching</p>
+        </div>
+
+        <div class="filter-controls-grid">
+          <!-- 1. State -->
+          <div class="filter-field">
+            <label for="filterState">Select State / Level</label>
+            <select id="filterState" onchange="runFilter()">
+              <option value="">All India (Central &amp; All States)</option>
+              <option value="Central">Central Government Only</option>
+              <option value="Andhra Pradesh">Andhra Pradesh</option>
+              <option value="Uttar Pradesh">Uttar Pradesh</option>
+              <option value="Maharashtra">Maharashtra</option>
+              <option value="Bihar">Bihar</option>
+              <option value="Madhya Pradesh">Madhya Pradesh</option>
+              <option value="Rajasthan">Rajasthan</option>
+            </select>
+          </div>
+
+          <!-- 2. Age Group (Includes Below 18) -->
+          <div class="filter-field">
+            <label for="filterAge">Age Group</label>
+            <select id="filterAge" onchange="runFilter()">
+              <option value="">All Age Brackets</option>
+              <option value="below18">Below 18 Years (Children &amp; Students)</option>
+              <option value="18-25">18 - 25 Years (College / Youth)</option>
+              <option value="25-60">25 - 60 Years (Working / Farmers)</option>
+              <option value="above60">Above 60 Years (Senior Citizens)</option>
+            </select>
+          </div>
+
+          <!-- 3. Occupation -->
+          <div class="filter-field">
+            <label for="filterOccupation">Occupation</label>
+            <select id="filterOccupation" onchange="runFilter()">
+              <option value="">All Occupations</option>
+              <option value="Student">Student (School / College)</option>
+              <option value="Unemployed">Unemployed / Jobseeker</option>
+              <option value="Farmer">Farmer / Agriculture</option>
+              <option value="Women Self-Employed">Self-Employed / Women SHG</option>
+            </select>
+          </div>
+
+          <!-- 4. Annual Income (Includes No Income) -->
+          <div class="filter-field">
+            <label for="filterIncome">Annual Family Income</label>
+            <select id="filterIncome" onchange="runFilter()">
+              <option value="">All Income Levels</option>
+              <option value="0">No Income (Students / Unemployed)</option>
+              <option value="100000">Below ₹1,00,000</option>
+              <option value="250000">Below ₹2,50,000</option>
+              <option value="500000">Below ₹5,00,000</option>
+            </select>
+          </div>
+
+          <!-- 5. Aadhaar Number Input in Middle Filter -->
+          <div class="filter-field">
+            <label for="filterAadhaar">Aadhaar (UIDAI)</label>
+            <input 
+              type="text" 
+              id="filterAadhaar" 
+              maxlength="14" 
+              placeholder="XXXX XXXX XXXX" 
+              oninput="formatAadhaarInput(this); validateAadhaarBadge(this)" 
+            />
+            <span class="field-indicator" id="aadhaarStatusIndicator">Optional e-KYC</span>
+          </div>
+
+          <!-- 6. Mobile Number Input in Middle Filter -->
+          <div class="filter-field">
+            <label for="filterMobile">Mobile Number (+91)</label>
+            <input 
+              type="tel" 
+              id="filterMobile" 
+              maxlength="10" 
+              placeholder="10-digit mobile" 
+            />
+            <span class="field-indicator">For SMS Alerts</span>
+          </div>
+        </div>
+
+        <div class="filter-action-footer">
+          <button class="btn-primary" onclick="runFilter()">Search Schemes</button>
+          <button class="btn-clear" onclick="resetFilters()">Reset Criteria</button>
+        </div>
+      </section>
+
+      <!-- Featured Schemes Section -->
+      <section class="schemes-list-section">
+        <div class="section-title-row">
+          <h3>Eligible Government Schemes</h3>
+          <span id="resultsCountTag">Showing All Schemes</span>
+        </div>
+        <div class="schemes-cards-grid" id="homeSchemesGrid">
+          <!-- Populated by script.js -->
+        </div>
+      </section>
+    </div>
+
+    <!-- VIEW: SCHEMES DIRECTORY -->
+    <div id="schemesView" class="view-panel">
+      <div class="section-title-row">
+        <h2>National &amp; State Schemes Directory</h2>
+        <button class="btn-secondary" onclick="switchView('homeView', document.getElementById('btnNavHome'))">← Back to Overview</button>
+      </div>
+      <div class="schemes-cards-grid" id="allSchemesGrid">
+        <!-- Populated by script.js -->
+      </div>
+    </div>
+
+    <!-- VIEW: NOTIFICATIONS PAGE -->
+    <div id="notificationsView" class="view-panel">
+      <div class="notif-board-card">
+        <div class="notif-board-header">
+          <div>
+            <h2>Official Notifications &amp; Circulars</h2>
+            <p>Direct updates regarding application dates, DBT installments, and verifications</p>
+          </div>
+          <span class="notif-badge-pill">3 Active Announcements</span>
+        </div>
+
+        <div class="notif-stream" id="notifStream">
+          <div class="notif-card notif-high">
+            <div class="notif-meta">
+              <span class="notif-source">Andhra Pradesh Higher Education Dept</span>
+              <span class="notif-time">Just Now</span>
+            </div>
+            <h4>Jagananna Vidya Deevena (RTF) 2026-27 Enrollment Open</h4>
+            <p>Students from zero-income and EWS households can submit fee reimbursement certificates via their college nodal officer.</p>
+          </div>
+
+          <div class="notif-card notif-info">
+            <div class="notif-meta">
+              <span class="notif-source">Ministry of Agriculture &amp; Farmers Welfare</span>
+              <span class="notif-time">3 hours ago</span>
+            </div>
+            <h4>PM Kisan &amp; YSR Rythu Bharosa Direct Benefit Installments</h4>
+            <p>Direct transfer initiated for verified farmer accounts with active Aadhaar-bank seeding across all districts.</p>
+          </div>
+
+          <div class="notif-card notif-warning">
+            <div class="notif-meta">
+              <span class="notif-source">District Magistrate Scrutiny Desk</span>
+              <span class="notif-time">Yesterday</span>
+            </div>
+            <h4>District Verification Deadlines</h4>
+            <p>Verification officers in Visakhapatnam, Guntur, Lucknow, and Pune are requested to clear all pending student scholarship applications.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW: HELP & SUPPORT -->
+    <div id="helpView" class="view-panel">
+      <div class="table-container-card">
+        <div class="section-title-row">
+          <div>
+            <h2>Helpdesk &amp; Citizen Support</h2>
+            <p>Find immediate help for eligibility queries, Aadhaar linking, application filing, and DBT issues.</p>
+          </div>
+          <button class="btn-secondary" onclick="switchView('homeView', document.getElementById('btnNavHome'))">← Back to Home</button>
+        </div>
+
+        <!-- Help Channels Grid -->
+        <div class="support-channels-grid">
+          <div class="support-box">
+            <div class="support-icon">📞</div>
+            <h4>National Toll-Free Helpline</h4>
+            <p>Available 24x7 in 12 Indian languages for scheme guidance and status queries.</p>
+            <div class="support-contact-pill">1800-11-0001 / 14444</div>
+          </div>
+
+          <div class="support-box">
+            <div class="support-icon">✉️</div>
+            <h4>Official Email Desk</h4>
+            <p>Submit grievance tickets, Aadhaar mismatch records, or portal technical bugs.</p>
+            <div class="support-contact-pill">support@yojanasetu.gov.in</div>
+          </div>
+
+          <div class="support-box">
+            <div class="support-icon">🏛️</div>
+            <h4>Jan Seva Kendra / MeeSeva</h4>
+            <p>Visit your nearest Common Service Center for physical biometric e-KYC authentication.</p>
+            <div class="support-contact-pill">Find Nearby Center</div>
+          </div>
+        </div>
+
+        <!-- Frequently Asked Questions -->
+        <div class="faq-container">
+          <h3>Frequently Asked Questions (FAQ)</h3>
+          
+          <div class="faq-item">
+            <h4>Q1: Who is eligible to select the "No Income" category?</h4>
+            <p>Students dependent on parents/guardians, full-time college attendees, and registered unemployed youth seeking stipends or competitive exam scholarships can select the "No Income" option.</p>
+          </div>
+
+          <div class="faq-item">
+            <h4>Q2: Is Aadhaar mandatory for checking schemes?</h4>
+            <p>No. Aadhaar is completely optional for browsing and discovering schemes. However, it is required when officially submitting an application for DBT Direct Benefit Transfer verification.</p>
+          </div>
+
+          <div class="faq-item">
+            <h4>Q3: How long does district verification take?</h4>
+            <p>District verification typically takes 3 to 7 working days. Once the District Verification Officer approves your submission, status changes to "Approved" with remarks under "My Applications".</p>
+          </div>
+        </div>
+
+        <!-- Grievance Form -->
+        <div class="grievance-form-card">
+          <h3>Submit a Support Grievance</h3>
+          <p style="font-size: 12px; color: #64748b; margin-bottom: 12px;">Our district liaison officer will get back to your mobile or email within 24 hours.</p>
+          
+          <div class="grievance-inputs-grid">
+            <input type="text" id="helpName" placeholder="Your Name" />
+            <input type="tel" id="helpMobile" maxlength="10" placeholder="10-digit Mobile Number" />
+            <select id="helpIssueType">
+              <option value="Application Status Delay">Application Status Delay</option>
+              <option value="Aadhaar / DBT Seeding Issue">Aadhaar / DBT Seeding Issue</option>
+              <option value="Income Certificate Discrepancy">Income Certificate Discrepancy</option>
+              <option value="District Officer Inquiry">District Officer Inquiry</option>
+              <option value="Other Query">Other Query</option>
+            </select>
+          </div>
+          <textarea id="helpDescription" rows="3" placeholder="Describe your grievance or scheme assistance query in detail..."></textarea>
+          <button class="btn-primary" style="margin-top: 10px;" onclick="submitSupportGrievance()">Submit Grievance Ticket</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW: ABOUT US -->
+    <div id="aboutView" class="view-panel">
+      <div class="table-container-card">
+        <div class="section-title-row">
+          <div>
+            <h2>About YojanaSetu</h2>
+            <p>Unified Public Digital Gateway for Central &amp; State Welfare Delivery</p>
+          </div>
+          <button class="btn-secondary" onclick="switchView('homeView', document.getElementById('btnNavHome'))">← Back to Home</button>
+        </div>
+
+        <div class="about-content-body">
+          <p>
+            <strong>YojanaSetu</strong> is a citizen-first digital bridge developed to connect every Indian citizen to legitimate Central and State Government welfare schemes without intermediaries. By organizing multi-tier eligibility rules across education, agriculture, women empowerment, housing, and social security, YojanaSetu eliminates information barriers and bureaucratic delays.
+          </p>
+
+          <div class="about-cards-grid">
+            <div class="about-card">
+              <span class="about-icon">🎯</span>
+              <h4>Citizen First Mission</h4>
+              <p>Ensuring that students, farmers, rural women, and unemployed youth easily find government benefits matched to their exact financial standing and district residence.</p>
+            </div>
+
+            <div class="about-card">
+              <span class="about-icon">⚡</span>
+              <h4>100% Cashless DBT</h4>
+              <p>Direct integration with the Aadhaar-enabled Public Financial Management System (PFMS) ensures benefits reach verified beneficiary bank accounts directly.</p>
+            </div>
+
+            <div class="about-card">
+              <span class="about-icon">🛡️</span>
+              <h4>District Level Transparency</h4>
+              <p>Dedicated verification portals for District Magistrates and Nodal Officers provide real-time accountability and transparent approval tracking for every submitted application.</p>
+            </div>
+
+            <div class="about-card">
+              <span class="about-icon">🇮🇳</span>
+              <h4>Pan-India Coverage</h4>
+              <p>Comprehensive repository of flagship Central schemes alongside state-specific initiatives across Andhra Pradesh, Uttar Pradesh, Maharashtra, Bihar, and other states.</p>
+            </div>
+          </div>
+
+          <div class="about-compliance-box">
+            <h4>Standards &amp; Governance</h4>
+            <p>
+              Designed and maintained under National e-Governance Standards (NeGD) and Digital India initiatives.<br />
+              All citizen data, Aadhaar numbers, and income records are safeguarded in accordance with the Digital Personal Data Protection (DPDP) Act.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW: MY APPLICATIONS (PROTECTED) -->
+    <div id="myAppsView" class="view-panel">
+      <div class="table-container-card">
+        <div class="section-title-row">
+          <div>
+            <h2>My Submitted Applications</h2>
+            <p>Track progress, scrutiny status, and verification remarks from your district administration.</p>
+          </div>
+          <button class="btn-primary" onclick="switchView('schemesView', document.getElementById('btnNavSchemes'))">+ Apply for New Scheme</button>
+        </div>
+
+        <table class="portal-table">
+          <thead>
+            <tr>
+              <th>Application ID</th>
+              <th>Scheme Name</th>
+              <th>State / District</th>
+              <th>Applicant Mobile</th>
+              <th>Submission Date</th>
+              <th>Status</th>
+              <th>District Officer Remarks</th>
+            </tr>
+          </thead>
+          <tbody id="citizenAppTableBody">
+            <!-- Populated by script.js -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- VIEW: DISTRICT VERIFICATION OFFICER DESK (PROTECTED) -->
+    <div id="officialDashView" class="view-panel">
+      <div class="table-container-card">
+        <div class="section-title-row">
+          <div>
+            <h2>District Officer Scrutiny &amp; Approval Desk</h2>
+            <p>Validate citizen submissions, inspect zero-income declarations, and issue real-time approvals.</p>
+          </div>
+          <div class="filter-field" style="min-width: 240px;">
+            <label for="districtSelectFilter">Filter By District</label>
+            <select id="districtSelectFilter" onchange="renderOfficialTable()">
+              <option value="All">All Districts</option>
+              <option value="Visakhapatnam">Visakhapatnam (Andhra Pradesh)</option>
+              <option value="Guntur">Guntur (Andhra Pradesh)</option>
+              <option value="Vijayawada">Vijayawada (Andhra Pradesh)</option>
+              <option value="Lucknow">Lucknow (Uttar Pradesh)</option>
+              <option value="Pune">Pune (Maharashtra)</option>
+              <option value="Patna">Patna (Bihar)</option>
+              <option value="Bhopal">Bhopal (Madhya Pradesh)</option>
+            </select>
+          </div>
+        </div>
+
+        <table class="portal-table">
+          <thead>
+            <tr>
+              <th>Application ID</th>
+              <th>Applicant Name</th>
+              <th>Scheme</th>
+              <th>District</th>
+              <th>Aadhaar / Mobile</th>
+              <th>Declared Income</th>
+              <th>Status</th>
+              <th>Officer Action</th>
+            </tr>
+          </thead>
+          <tbody id="officialAppTableBody">
+            <!-- Populated by script.js -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- APPLICATION SUBMISSION MODAL -->
+<div id="applyModal" class="modal-backdrop">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 id="modalSchemeTitle">Apply for Scheme</h3>
+      <button class="modal-close" onclick="closeApplyModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="input-group">
+        <label for="appFullName">Full Name (as on Aadhaar)</label>
+        <input type="text" id="appFullName" placeholder="Full Name" />
+      </div>
+
+      <div class="input-group">
+        <label for="appMobileNumber">Active Mobile Number (+91)</label>
+        <input type="tel" id="appMobileNumber" maxlength="10" placeholder="10-digit mobile number" />
+      </div>
+
+      <div class="input-group">
+        <label for="appAadhaarNumber">Aadhaar Card Number</label>
+        <input 
+          type="text" 
+          id="appAadhaarNumber" 
+          maxlength="14" 
+          placeholder="XXXX XXXX XXXX" 
+          oninput="formatAadhaarInput(this)" 
+        />
+      </div>
+
+      <div class="input-group">
+        <label for="appDistrictSelect">Select Resident District</label>
+        <select id="appDistrictSelect">
+          <option value="Visakhapatnam">Visakhapatnam (Andhra Pradesh)</option>
+          <option value="Guntur">Guntur (Andhra Pradesh)</option>
+          <option value="Vijayawada">Vijayawada (Andhra Pradesh)</option>
+          <option value="Lucknow">Lucknow (Uttar Pradesh)</option>
+          <option value="Pune">Pune (Maharashtra)</option>
+          <option value="Patna">Patna (Bihar)</option>
+          <option value="Bhopal">Bhopal (Madhya Pradesh)</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label for="appIncomeBracket">Declared Annual Income</label>
+        <select id="appIncomeBracket">
+          <option value="0">₹0 - No Income (Student / Unemployed)</option>
+          <option value="75000">Below ₹1,00,000</option>
+          <option value="200000">₹1,00,000 - ₹2,50,000</option>
+          <option value="400000">Above ₹2,50,000</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-clear" onclick="closeApplyModal()">Cancel</button>
+      <button class="btn-primary" onclick="submitCitizenApplication()">Submit to District Desk</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
