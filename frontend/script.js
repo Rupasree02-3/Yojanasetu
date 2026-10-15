@@ -2,6 +2,8 @@
    YOJANASETU PORTAL JAVASCRIPT ENGINE
    ======================================================== */
 
+const API_BASE_URL = "https://yojanasetu-s3a5.onrender.com";
+
 // 1. SCHEMES DATABASE (PAN-INDIA, CENTRAL & ANDHRA PRADESH)
 const schemesDatabase = [
   {
@@ -393,7 +395,7 @@ async function submitCitizenApplication() {
   };
 
   try {
-    const res = await fetch("http://127.0.0.1:8000/api/applications", {
+    const res = await fetch(API_BASE_URL + "/api/applications", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
@@ -431,7 +433,7 @@ async function submitCitizenApplication() {
 // 10. APPLICATION RENDERING & SCRUTINY
 async function loadApplicationsFromDatabase() {
   try {
-    const res = await fetch("http://127.0.0.1:8000/api/applications");
+    const res = await fetch(API_BASE_URL + "/api/applications");
     if (res.ok) {
       applicationsDatabase = await res.json();
     }
@@ -489,7 +491,7 @@ function renderOfficialTable() {
 async function verifyDeskAction(appId, decision) {
   const decisionPayload = { decision: decision };
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/applications/" + appId + "/verify", {
+    const response = await fetch(API_BASE_URL + "/api/applications/" + appId + "/verify", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(decisionPayload)
